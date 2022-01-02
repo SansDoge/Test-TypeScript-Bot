@@ -1,11 +1,13 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-
 import { Client, Message } from 'discord.js';
+import { bot_command, validSender } from '../helpers/functions';
 
+// Fields
 const client = new Client({
-  intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_MESSAGE_TYPING"]
+  intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS', 'GUILD_MESSAGE_TYPING']
 });
+export let prefix = '!';
 
 client.login(process.env.BOT_TOKEN);
 
@@ -16,9 +18,21 @@ client.once('ready', () => {
 client.on('messageCreate', (sentMessage: Message) => {
   if (!validSender(sentMessage)) return;
 
+  let content = sentMessage.content.trim().toLowerCase();
+  let split_content = content.split(" ");
+
+  // Non-command cases
   if (sentMessage.content === 'test') {
     sentMessage.reply('confirm test');
   }
+
+  // Command cases
+  let command = bot_command(split_content);
+
+  console.log(split_content.toString());
+
+  if (command == null) return;
+  command.run(sentMessage);
 });
 
 client.on('messageDelete', (deletedMessage: Message) => {
@@ -27,6 +41,9 @@ client.on('messageDelete', (deletedMessage: Message) => {
   deletedMessage.channel.send(deletedMessage.content);
 });
 
-function validSender(message: Message) {
-  return !(message.author.id == client.user.id);
-}
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
+  if (interaction.commandName === 'ping') {
+    await interaction.reply('Pong!');
+  }
+});
