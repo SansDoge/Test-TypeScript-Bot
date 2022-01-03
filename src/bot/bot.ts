@@ -5,19 +5,20 @@ import { bot_command, validSender } from '../helpers/functions';
 
 // Fields
 const client = new Client({
-  intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS', 'GUILD_MESSAGE_TYPING']
+  intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_MESSAGE_TYPING"]
 });
-export let prefix = '!';
+export let prefix: string = "!";
 
+// Bot startup
 client.login(process.env.BOT_TOKEN);
-
-client.once('ready', () => {
-  console.log('Bot is ready');
+client.once("ready", () => {
+  console.log("Bot is ready");
 });
 
-client.on('messageCreate', (sentMessage: Message) => {
+client.on("messageCreate", (sentMessage: Message) => {
   if (!validSender(sentMessage)) return;
 
+  // Process message
   let content = sentMessage.content.trim().toLowerCase();
   let split_content = content.split(" ");
 
@@ -28,22 +29,17 @@ client.on('messageCreate', (sentMessage: Message) => {
 
   // Command cases
   let command = bot_command(split_content);
-
-  console.log(split_content.toString());
-
   if (command == null) return;
   command.run(sentMessage);
 });
 
-client.on('messageDelete', (deletedMessage: Message) => {
+client.on("messageDelete", (deletedMessage: Message) => {
   if (!validSender(deletedMessage)) return;
 
   deletedMessage.channel.send(deletedMessage.content);
 });
 
-client.on('interactionCreate', async (interaction) => {
+client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
-  if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!');
-  }
+  // To Implement later
 });
