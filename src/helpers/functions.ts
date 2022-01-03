@@ -1,4 +1,4 @@
-import { Message, MessageEmbed } from "discord.js";
+import { Message } from "discord.js";
 import { prefix } from "../bot/bot";
 import { command_list } from "../commands/commands";
 

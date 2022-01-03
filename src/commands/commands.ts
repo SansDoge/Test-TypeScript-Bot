@@ -7,19 +7,23 @@ import { prefix } from "../bot/bot";
 const purge: CommandInt = {
     name: "purge",
     description: "Purges number of messages specified by user.",
-    syntax: "{prefix}purge {number of messages to delete: 2 <= n <= 99}",
+    syntax: "{prefix}purge {number of messages to delete: 1 <= n <= 99}",
     run: async (message: Message) => {
+
+        // Process command arguments
         let command_arguments = get_command_arguments(message);
         let channel: TextChannel = message.channel as TextChannel;
         let num_msg_to_delete: number = command_arguments.length == 0 ? 99 : parseInt(command_arguments[0]);
         
-        if (isNaN(num_msg_to_delete) || num_msg_to_delete < 2 || num_msg_to_delete > 99) {
-            channel.send("Illegal arguments. Must enter the number of messages to delete between 2 and 99 inclusive.");
+        // Illegal arguments case
+        if (isNaN(num_msg_to_delete) || num_msg_to_delete < 1 || num_msg_to_delete > 99) {
+            channel.send("Illegal arguments. Must enter the number of messages to delete between 1 and 99 inclusive.");
             return;
         }
         
+        // Delete messges
         channel.bulkDelete(num_msg_to_delete + 1, true)
-            .then(messages => console.log("Bulk deleted " + messages.size + " messages."))
+            .then(messages => console.log("Deleted " + messages.size + " messages from " + message.channel.toString()))
             .catch(console.error);
     }
 }
@@ -30,13 +34,29 @@ const get_bot_commands: CommandInt = {
     description: "Lists all the commands and their descriptions.",
     syntax: "{prefix}commands",
     run: async (message: Message) => {
-        const commands = new MessageEmbed()
-            .setTitle("Bot Commands")
-            .setDescription("Bot prefix: " + prefix);
+        
+        // List of embeds with command descriptions
+        const commands_embeds_list: MessageEmbed[] = [
+            new MessageEmbed()
+                .setTitle("Bot Commands")
+                .setDescription("Bot prefix: " + prefix)
+        ];
+
+        // Loops through command_list and adds commands into embeds
         command_list.forEach((command: CommandInt, command_name: string) => {
-            commands.addField(command_name, command.description);
+
+            // Discord API restriction of 25 fields per embed
+            // Adds embeds for every 25 commands
+            if (commands_embeds_list[commands_embeds_list.length - 1].fields.length == 25) {
+                commands_embeds_list.push(new MessageEmbed());
+            }
+            commands_embeds_list[commands_embeds_list.length - 1].addField(command_name, command.description);
         });
-        message.channel.send({ embeds: [commands] });
+
+        // Sends all embeds
+        for (let i = 0; i < commands_embeds_list.length; i++) {
+            message.channel.send({ embeds: [commands_embeds_list[i]] });
+        }
     }
 }
 

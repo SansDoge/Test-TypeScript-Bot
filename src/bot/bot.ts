@@ -35,8 +35,6 @@ client.on("messageCreate", (sentMessage: Message) => {
 
 client.on("messageDelete", (deletedMessage: Message) => {
   if (!validSender(deletedMessage)) return;
-
-  deletedMessage.channel.send(deletedMessage.content);
 });
 
 client.on("interactionCreate", async (interaction) => {
