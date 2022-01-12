@@ -28,15 +28,21 @@ const purge: CommandInt = {
     }
 }
 
-// Get all commands
+// Help: get all commands and displays resources
 const get_bot_commands: CommandInt = {
-    name: "commands",
+    name: "help",
     description: "Lists all the commands and their descriptions.",
-    syntax: "{prefix}commands",
+    syntax: "{prefix}help",
     run: async (message: Message) => {
         
         // List of embeds with command descriptions
         const commands_embeds_list: MessageEmbed[] = [
+            new MessageEmbed()
+                .setTitle("Bot Help")
+                .setDescription("Discord.js resources").addFields([
+                    { name: "discord.js documentation", value: "https://discord.js.org/#/docs/main/stable/general/welcome" },
+                    { name: "discordjs.guide", value: "https://discordjs.guide/#before-you-begin" }
+                ]),
             new MessageEmbed()
                 .setTitle("Bot Commands")
                 .setDescription("Bot prefix: " + prefix)
