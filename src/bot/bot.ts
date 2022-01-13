@@ -41,3 +41,7 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
   // To Implement later
 });
+
+export function new_prefix(new_prefix: string) {
+  prefix = new_prefix;
+}

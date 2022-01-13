@@ -1,17 +1,39 @@
 import { Message, MessageEmbed, TextChannel } from "discord.js";
-import { CommandInt } from "../interfaces/command_interface";
+import { Command } from "../interfaces/command_interface";
 import { get_command_arguments } from "../helpers/functions";
-import { prefix } from "../bot/bot";
+import { prefix, new_prefix } from "../bot/bot";
+
+// Change Prefix
+const change_prefix: Command = {
+    name: "prefix",
+    description: "Changes the prefix for the bot.",
+    syntax: "{old prefix}prefix {new prefix}",
+    run: async (message: Message) => {
+
+        // Process command arguments
+        let command_arguments: string[] = get_command_arguments(message);
+        let channel: TextChannel = message.channel as TextChannel;
+        if (command_arguments.length == 0) {
+            channel.send("The prefix cannot be empty!");
+            return;
+        }
+
+        // Changes prefix
+        let requested_prefix: string = command_arguments[0];
+        new_prefix(requested_prefix);
+        channel.send("The prefix has been changed to: " + prefix + ".");
+    }
+}
 
 // Purge
-const purge: CommandInt = {
+const purge: Command = {
     name: "purge",
     description: "Purges number of messages specified by user.",
     syntax: "{prefix}purge {number of messages to delete: 1 <= n <= 99}",
     run: async (message: Message) => {
 
         // Process command arguments
-        let command_arguments = get_command_arguments(message);
+        let command_arguments: string[] = get_command_arguments(message);
         let channel: TextChannel = message.channel as TextChannel;
         let num_msg_to_delete: number = command_arguments.length == 0 ? 99 : parseInt(command_arguments[0]);
         
@@ -29,7 +51,7 @@ const purge: CommandInt = {
 }
 
 // Help: get all commands and displays resources
-const get_bot_commands: CommandInt = {
+const get_bot_commands: Command = {
     name: "help",
     description: "Lists all the commands and their descriptions.",
     syntax: "{prefix}help",
@@ -49,7 +71,7 @@ const get_bot_commands: CommandInt = {
         ];
 
         // Loops through command_list and adds commands into embeds
-        command_list.forEach((command: CommandInt, command_name: string) => {
+        command_list.forEach((command: Command, command_name: string) => {
 
             // Discord API restriction of 25 fields per embed
             // Adds embeds for every 25 commands
@@ -67,7 +89,8 @@ const get_bot_commands: CommandInt = {
 }
 
 // Command list
-export const command_list= new Map<string, CommandInt>([
+export const command_list= new Map<string, Command>([
+    [change_prefix.name, change_prefix],
     [purge.name, purge],
     [get_bot_commands.name, get_bot_commands]
 ]);
