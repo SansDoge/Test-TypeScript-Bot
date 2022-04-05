@@ -50,6 +50,23 @@ const purge: Command = {
     }
 }
 
+// Test
+const test: Command = {
+    name: "test",
+    description: "Used for testing random things.",
+    syntax: "{prefix}test",
+    run: async (message: Message) => {
+        message.channel.send(message.author.id);
+        try {
+            const member = await message.guild.members.fetch('922337203685477580');
+            message.channel.send('The user you are trying to premove exists on this server');
+            if (!member.user.bot) message.channel.send('User is not a bot');
+        } catch (e) {
+            message.channel.send('The user you are trying to premove doesn\'t exist on this server');
+        }
+    }
+}
+
 // Help: get all commands and displays resources
 const get_bot_commands: Command = {
     name: "help",
@@ -92,5 +109,6 @@ const get_bot_commands: Command = {
 export const command_list= new Map<string, Command>([
     [change_prefix.name, change_prefix],
     [purge.name, purge],
+    [test.name, test],
     [get_bot_commands.name, get_bot_commands]
 ]);
